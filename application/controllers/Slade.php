@@ -92,31 +92,6 @@ class Slade extends CI_Controller
             }
 
 
-
-            if ($this->db->where('shop', $shop)->get('offers')->num_rows() > 0) {
-                $offers = $this->db->where('shop', $shop)->get('offers')->result_array();
-                foreach ($offers as $key => $value) {
-                    $oid = $value['offer_id'];
-                    $data['offer'][$oid]['offer'] = $this->db->where('offer_id', $oid)->get('offers')->result_array();
-                    $data['offer'][$oid]['products'] = $this->db->where('offer', $oid)->get('products')->result_array();
-                    $data['offer'][$oid]['variants'] = $this->db->where('oid', $oid)->get('variants')->result_array();
-                    $data['offer'][$oid]['blocks'] = $this->db->where('oid', $oid)->get('cbs')->result_array();
-                    $data['offer'][$oid]['conditions'] = $this->db->where('oid', $oid)->get('ocs')->result_array();
-                    $data['offer'][$oid]['fields'] = $this->db->where('oid', $oid)->get('cfs')->result_array();
-                    $data['offer'][$oid]['choices'] = $this->db->where('oid', $oid)->get('choices')->result_array();
-                }
-            } else {
-                $data['offer'] = array();
-
-                $s_mail = $this->Shopify->shopify_call($token, $shop, '/admin/api/2020-10/shop.json', array('fields' => 'email'), 'GET');
-                $s_mail = json_decode($s_mail['response'], true);
-
-                $data['email'] = $s_mail['shop']['email'];
-                if ($shop_data->created_at == '') {
-                }
-            }
-
-
             $data['api_key'] = $this->config->item('shopify_api_key');
             $data['shop'] = $shop;
             $data['token'] = $token;
@@ -227,7 +202,7 @@ class Slade extends CI_Controller
             echo '<script>window.location.href = "' . base_url() . 'upgrade?' . $_SERVER['QUERY_STRING'] . '";</script>';
         } else {
             // Someone is trying to be shady!
-            header("Location: https://sleek-upsell.herokuapp.com/");
+            header("Location: https://sleek-discount.herokuapp.com/");
             die('This request is NOT from Shopify!');
         }
     }
@@ -331,7 +306,7 @@ class Slade extends CI_Controller
                     'test' => true,
                     'price' => 19.99,
                     'trial_days' => 14,
-                    'return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-upsell/activate?t=true&hmac=' . $_GET['hmac'] . '&shop=' . $_GET['shop'],
+                    'return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-discount/activate?t=true&hmac=' . $_GET['hmac'] . '&shop=' . $_GET['shop'],
                 ),
             );
         } else {
@@ -341,7 +316,7 @@ class Slade extends CI_Controller
                     'test' => false,
                     'price' => 19.99,
                     'trial_days' => 14,
-                    'return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-upsell/activate?t=false&hmac=' . $_GET['hmac'] . '&shop=' . $_GET['shop'],
+                    'return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-discount/activate?t=false&hmac=' . $_GET['hmac'] . '&shop=' . $_GET['shop'],
                 ),
             );
         }
@@ -375,14 +350,14 @@ class Slade extends CI_Controller
                     'api_client_id' => time(),
                     'price' => '19.99',
                     'status' => 'accepted',
-                    'return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-upsell',
+                    'return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-discount',
                     'billing_on' => null,
                     'test' => $_GET['t'],
                     'activated_on' => null,
                     'trial_ends_on' => null,
                     'cancelled_on' => null,
                     'trial_days' => 14,
-                    'decorated_return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-upsell?charge_id=' . $charge_id,
+                    'decorated_return_url' => 'https://' . $_GET['shop'] . '/admin/apps/sleek-discount?charge_id=' . $charge_id,
                 ),
             );
 
@@ -407,136 +382,13 @@ class Slade extends CI_Controller
             );
 
             $this->db->where('shop', str_replace(".myshopify.com", "", $_GET['shop']))->set($active_shop)->update('shops');
-            echo '<script>top.window.location="https://' . $_GET['shop'] . '/admin/apps/sleek-upsell?' . $_SERVER['QUERY_STRING'] . '";</script>';
+            echo '<script>top.window.location="https://' . $_GET['shop'] . '/admin/apps/sleek-discount?' . $_SERVER['QUERY_STRING'] . '";</script>';
         }
     }
 
     public function get_app()
     {
-        echo '<!DOCTYPE html><html lang="en"><head> <title>Sleek Upsell — Installation</title> <meta http-equiv="x-ua-compatible" content="ie=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <style>*{-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;}body{padding: 2.5em 0; color: #212b37; font-family: -apple-system,BlinkMacSystemFont,San Francisco,Roboto,Segoe UI,Helvetica Neue,sans-serif;}.container{width: 100%; text-align: center; margin-left: auto; margin-right: auto;}@media screen and (min-width: 510px){.container{width: 510px;}}.title{font-size: 1.5em; margin: 2em auto; display: flex; align-items: center; justify-content: center; word-break: break-all;}.subtitle{font-size: 0.8em; font-weight: 500; color: #64737f; line-height: 2em;}.error{line-height: 1em; padding: 0.5em; color: red;}input.marketing-input{width: 100%; height: 52px; padding: 0 15px; box-shadow: 0 0 0 1px #ddd; border: 0; border-radius: 5px; background-color: #fff; font-size: 1em; margin-bottom: 15px;}input.marketing-input:focus{color: #000; outline: 0; box-shadow: 0 0 0 2px #5e6ebf;}button.marketing-button{display: inline-block; width: 100%; padding: 1.0625em 1.875em; background-color: #5e6ebf; color: #fff; font-weight: 700; font-size: 1em; text-align: center; outline: none; border: 0 solid transparent; border-radius: 5px; cursor: pointer;}button.marketing-button:hover{background: linear-gradient(to bottom, #5c6ac4, #4959bd); border-color: #3f4eae;}button.marketing-button:focus{box-shadow: 0 0 0.1875em 0.1875em rgba(94,110,191,0.5); background-color: #223274; color: #fff;}</style></head><body> <main class="container" role="main"> <h3 class="title"> Sleek Upsell </h3> <p class="subtitle"> <label for="shop">Enter your shop domain to log in or install this app.</label> </p><form action="/install" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="' . sha1(md5('nehN7kwK9YR++yH5VIG2I0C2wMNMYReLqtJAuhRimoqM3wmzPwV24KDKaOy1aGnKPBYeWoiDOuldhtvdcA73Ww==')) . '"/> <input id="shop" name="shop" type="text" autofocus="autofocus" placeholder="example.myshopify.com" class="marketing-input"> <button type="submit" class="marketing-button">Install</button></form> </main></body></html>';
-    }
-
-    public function new_offer($shop, $token)
-    {
-        if ($this->db->where('shop', $shop)->get('shops')->num_rows() == 0) {
-            echo '<script>window.location.href = "' . base_url() . 'install?shop=' . $_GET['shop'] . '";</script>';
-        }
-
-        $shop_data = $this->db->where('shop', $shop)->get('shops')->row();
-
-        $data['token'] = $shop_data->token;
-        $data['shop'] = $shop_data->shop;
-
-        $data['page_name'] = 'create_offer';
-        $this->load->view('index', $data);
-    }
-
-    public function edit_offer($shop, $token, $offer)
-    {
-        if ($this->db->where('shop', $shop)->get('shops')->num_rows() == 0) {
-            echo '<script>window.location.href = "' . base_url() . 'install?shop=' . $_GET['shop'] . '";</script>';
-        }
-
-        $shop_data = $this->db->where('shop', $shop)->get('shops')->row();
-
-        $data['offer'] = $this->db->where('offer_id', $offer)->get('offers')->result_array();
-        $data['products'] = $this->db->where('offer', $offer)->get('products')->result_array();
-        $data['variants'] = $this->db->where('oid', $offer)->get('variants')->result_array();
-        $data['blocks'] = $this->db->where('oid', $offer)->get('cbs')->result_array();
-        $data['conditions'] = $this->db->where('oid', $offer)->get('ocs')->result_array();
-        $data['fields'] = $this->db->where('oid', $offer)->get('cfs')->result_array();
-        $data['choices'] = $this->db->where('oid', $offer)->get('choices')->result_array();
-
-        $data['token'] = $shop_data->token;
-        $data['shop'] = $shop_data->shop;
-
-        $data['page_name'] = 'edit_offer';
-        $this->load->view('index', $data);
-    }
-
-    public function offer_status($oid, $status)
-    {
-        $this->db->where('offer_id', $oid)->set('status', $status)->update('offers');
-    }
-
-    public function settings($shop, $token)
-    {
-        $data['token'] = $token;
-        $data['shop'] = $shop;
-
-        $data['page_name'] = 'settings';
-        $this->load->view('index', $data);
-    }
-
-    public function update_settings()
-    {
-        if (isset($_POST)) {
-            print_r($_POST);
-            if ($this->db->where('shop', $_POST['shop'])->get('settings')->num_rows() > 0) {
-                echo 'This shop settings exists';
-                echo 'Updating ' . $_POST['shop'];
-                $this->db->where('shop', $_POST['shop'])->update('settings', $_POST);
-            } else {
-                $this->db->insert('settings', $_POST);
-                echo 'Created new entry';
-            }
-        } else {
-            echo 'Couldnt find post';
-            print_r($_POST);
-        }
-    }
-
-    public function offers($shop)
-    {
-        $shop_name = str_replace(".myshopify.com", "", $shop);
-        $products_json = '/admin/api/2020-10/products.json';
-        $collections_json = '/admin/api/2020-10/custom_collections.json';
-        $collects_json = '/admin/api/2020-10/collects.json';
-        $themes_json = '/admin/api/2020-10/themes.json';
-
-        if ($this->db->where('shop', $shop_name)->get('shops')->num_rows() == 0) {
-            $offers = array();
-        } else {
-            $token = $this->db->where('shop', $shop_name)->get('shops')->row()->token;
-            $i = 0;
-
-            $data['shop'] = $shop_name;
-            $data['token'] = $token;
-            $collects = $this->Shopify->shopify_call($token, $shop_name, $collects_json, array(), 'GET');
-            $collections = $this->Shopify->shopify_call($token, $shop_name, $collections_json, array(), 'GET');
-            $products = $this->Shopify->shopify_call($token, $shop_name, $products_json, array(), 'GET');
-            $themes = $this->Shopify->shopify_call($token, $shop_name, $themes_json, array(), 'GET');
-        }
-
-        $sid = $this->db->where('shop', $shop_name)->get('shops')->row()->shop_id;
-
-        $params['products'] = json_decode($products['response'], true);
-        $params['collections'] = json_decode($collections['response'], true);
-        $params['collects'] = json_decode($collects['response'], true);
-        $params['themes'] = json_decode($themes['response'], true);
-
-        $offers = $this->db->where('shop', $shop_name)->get('offers')->result_array();
-        $data['settings'] = $this->db->where('shop', $shop_name)->get('settings')->row();
-
-        foreach ($offers as $key => $value) {
-            $oid = $value['offer_id'];
-            $data['offer'][$oid]['offer'] = $this->db->where('offer_id', $oid)->get('offers')->result_array();
-            $data['offer'][$oid]['products'] = $this->db->where('offer', $oid)->get('products')->result_array();
-            $data['offer'][$oid]['variants'] = $this->db->where('oid', $oid)->get('variants')->result_array();
-            $data['offer'][$oid]['blocks'] = $this->db->where('oid', $oid)->get('cbs')->result_array();
-            $data['offer'][$oid]['conditions'] = $this->db->where('oid', $oid)->get('ocs')->result_array();
-            $data['offer'][$oid]['fields'] = $this->db->where('oid', $oid)->get('cfs')->result_array();
-            $data['offer'][$oid]['choices'] = $this->db->where('oid', $oid)->get('choices')->result_array();
-        }
-
-        $data['products'] = $params['products']['products'];
-        $data['collections'] = $params['collections']['custom_collections'];
-        $data['collects'] = $params['collects']['collects'];
-        $data['themes'] = $params['themes']['themes'];
-
-        header('Content-Type: application/json');
-        header('X-Shopify-Access-Token: ' . $token);
-        echo json_encode($data);
+        echo '<!DOCTYPE html><html lang="en"><head> <title>Sleek Discounts — Installation</title> <meta http-equiv="x-ua-compatible" content="ie=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <style>*{-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;}body{padding: 2.5em 0; color: #212b37; font-family: -apple-system,BlinkMacSystemFont,San Francisco,Roboto,Segoe UI,Helvetica Neue,sans-serif;}.container{width: 100%; text-align: center; margin-left: auto; margin-right: auto;}@media screen and (min-width: 510px){.container{width: 510px;}}.title{font-size: 1.5em; margin: 2em auto; display: flex; align-items: center; justify-content: center; word-break: break-all;}.subtitle{font-size: 0.8em; font-weight: 500; color: #64737f; line-height: 2em;}.error{line-height: 1em; padding: 0.5em; color: red;}input.marketing-input{width: 100%; height: 52px; padding: 0 15px; box-shadow: 0 0 0 1px #ddd; border: 0; border-radius: 5px; background-color: #fff; font-size: 1em; margin-bottom: 15px;}input.marketing-input:focus{color: #000; outline: 0; box-shadow: 0 0 0 2px #5e6ebf;}button.marketing-button{display: inline-block; width: 100%; padding: 1.0625em 1.875em; background-color: #5e6ebf; color: #fff; font-weight: 700; font-size: 1em; text-align: center; outline: none; border: 0 solid transparent; border-radius: 5px; cursor: pointer;}button.marketing-button:hover{background: linear-gradient(to bottom, #5c6ac4, #4959bd); border-color: #3f4eae;}button.marketing-button:focus{box-shadow: 0 0 0.1875em 0.1875em rgba(94,110,191,0.5); background-color: #223274; color: #fff;}</style></head><body> <main class="container" role="main"> <h3 class="title"> Sleek Discounts </h3> <p class="subtitle"> <label for="shop">Enter your shop domain to log in or install this app.</label> </p><form action="/install" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="' . sha1(md5('nehN7kwK9YR++yH5VIG2I0C2wMNMYReLqtJAuhRimoqM3wmzPwV24KDKaOy1aGnKPBYeWoiDOuldhtvdcA73Ww==')) . '"/> <input id="shop" name="shop" type="text" autofocus="autofocus" placeholder="example.myshopify.com" class="marketing-input"> <button type="submit" class="marketing-button">Install</button></form> </main></body></html>';
     }
 
     public function variants($product, $token, $shop)
@@ -749,131 +601,6 @@ class Slade extends CI_Controller
         echo $html;
     }
 
-    public function create_offers()
-    {
-        $offer_data = $_POST;
-
-        foreach ($offer_data['offer'] as $o) {
-            $o['offer_id'] = $this->db->limit('1')->order_by('offer_id', 'DESC')->get('offers')->row()->offer_id + 1;
-            $this->db->insert('offers', $o);
-        }
-
-        $oid = $this->db->limit('1')->order_by('offer_id', 'DESC')->get('offers')->row()->offer_id;
-
-        if (array_key_exists('products', $offer_data)) {
-            foreach ($offer_data['products'] as $p) {
-                $p['offer'] = $oid;
-                $p['product_id'] = $this->db->get('products')->num_rows() + 1;
-                $this->db->insert('products', $p);
-            }
-        }
-        if (array_key_exists('variants', $offer_data)) {
-            foreach ($offer_data['variants'] as $v) {
-                $v['oid'] = $oid;
-                $v['id'] = $this->db->get('variants')->num_rows() + 1;
-                $this->db->insert('variants', $v);
-            }
-        }
-        if (array_key_exists('blocks', $offer_data)) {
-            foreach ($offer_data['blocks'] as $b) {
-                $b['oid'] = $oid;
-                $this->db->insert('cbs', $b);
-            }
-        }
-        if (array_key_exists('conditions', $offer_data)) {
-            foreach ($offer_data['conditions'] as $c) {
-                $c['oid'] = $oid;
-                $this->db->insert('ocs', $c);
-            }
-        }
-        if (array_key_exists('fields', $offer_data)) {
-            foreach ($offer_data['fields'] as $f) {
-                $f['oid'] = $oid;
-                $this->db->insert('cfs', $f);
-            }
-        }
-        if (array_key_exists('choices', $offer_data)) {
-            foreach ($offer_data['choices'] as $ch) {
-                $ch['oid'] = $oid;
-                $this->db->insert('choices', $ch);
-            }
-        }
-
-        echo $oid;
-    }
-
-    public function update_offers($oid)
-    {
-        $offer_data = $_POST;
-
-        $nothing = $oid;
-
-        if (isset($nothing)) {
-
-            if (array_key_exists('offer', $offer_data)) {
-                foreach ($offer_data['offer'] as $o) {
-                    $this->db->where('offer_id', $oid)->set($o)->update('offers');
-                }
-
-                $this->db->where('offer', $oid)->delete('products');
-                $this->db->where('oid', $oid)->delete('variants');
-                $this->db->where('oid', $oid)->delete('cbs');
-                $this->db->where('oid', $oid)->delete('ocs');
-                $this->db->where('oid', $oid)->delete('cfs');
-                $this->db->where('oid', $oid)->delete('choices');
-
-                foreach ($this->db->get('products')->result_array() as $key => $fetch) {
-                    $this->db->where('product_id', $fetch['product_id'])->set('product_id', $key + 1)->update('products');
-                }
-
-                foreach ($this->db->get('variants')->result_array() as $key => $fetch) {
-                    $this->db->where('id', $fetch['id'])->set('id', $key + 1)->update('variants');
-                }
-
-                if (array_key_exists('products', $offer_data)) {
-                    foreach ($offer_data['products'] as $p) {
-                        $p['offer'] = $oid;
-                        $p['product_id'] = $this->db->get('products')->num_rows() + 1;
-                        $this->db->insert('products', $p);
-                    }
-                }
-                if (array_key_exists('variants', $offer_data)) {
-                    foreach ($offer_data['variants'] as $v) {
-                        $v['oid'] = $oid;
-                        $v['id'] = $this->db->get('variants')->num_rows() + 1;
-                        $this->db->insert('variants', $v);
-                    }
-                }
-                if (array_key_exists('blocks', $offer_data)) {
-                    foreach ($offer_data['blocks'] as $b) {
-                        $b['oid'] = $oid;
-                        $this->db->insert('cbs', $b);
-                    }
-                }
-                if (array_key_exists('conditions', $offer_data)) {
-                    foreach ($offer_data['conditions'] as $c) {
-                        $c['oid'] = $oid;
-                        $this->db->insert('ocs', $c);
-                    }
-                }
-                if (array_key_exists('fields', $offer_data)) {
-                    foreach ($offer_data['fields'] as $f) {
-                        $f['oid'] = $oid;
-                        $this->db->insert('cfs', $f);
-                    }
-                }
-                if (array_key_exists('choices', $offer_data)) {
-                    foreach ($offer_data['choices'] as $ch) {
-                        $ch['oid'] = $oid;
-                        $this->db->insert('choices', $ch);
-                    }
-                }
-
-                echo $oid;
-            }
-        }
-    }
-
     public function stats($shop)
     {
         if ($this->db->where('shop', $shop)->get('shops')->num_rows() == 0) {
@@ -888,35 +615,7 @@ class Slade extends CI_Controller
         $data['page_name'] = 'stats';
         $this->load->view('index', $data);
     }
-
-    public function offer_stats($shop, $offer)
-    {
-        if ($this->db->where('shop', $shop)->get('shops')->num_rows() == 0) {
-            echo '<script>window.location.href = "' . base_url() . 'install?shop=' . $_GET['shop'] . '";</script>';
-        }
-
-        $shop_data = $this->db->where('shop', $shop)->get('shops')->row();
-
-        $data['offer'] = $offer;
-        $data['token'] = $shop_data->token;
-        $data['shop'] = $shop_data->shop;
-
-        $data['page_name'] = 'offer_stats';
-        $this->load->view('index', $data);
-    }
-
-    public function delete_offer($oid)
-    {
-        $this->db->where('offer_id', $oid)->delete('offers');
-        $this->db->where('offer', $oid)->delete('products');
-        $this->db->where('oid', $oid)->delete('variants');
-        $this->db->where('oid', $oid)->delete('cbs');
-        $this->db->where('oid', $oid)->delete('ocs');
-        $this->db->where('oid', $oid)->delete('cfs');
-        $this->db->where('oid', $oid)->delete('choices');
-        $this->db->where('offer', $oid)->delete('stats');
-    }
-
+    
     public function delstats($oid)
     {
         $this->db->where('offer', $oid)->delete('stats');
@@ -931,359 +630,6 @@ class Slade extends CI_Controller
         print_r($_POST);
     }
 
-    public function new_offer_table()
-    {
-        $this->db->query('DROP TABLE IF EXISTS `offers`');
-        $query = '
-        CREATE TABLE IF NOT EXISTS `offers` (
-          `offer_id` int(11) NOT NULL AUTO_INCREMENT,
-          `offer_title` text NOT NULL,
-          `offer_shop` text NOT NULL,
-          `offer_text` longtext NOT NULL,
-          `offer_button_text` text NOT NULL,
-          `offer_color_scheme` text NOT NULL,
-          `offer_layout` text NOT NULL,
-          `offer_products` longtext NOT NULL,
-          `offer_product_image` text NOT NULL,
-          `offer_product_title` text NOT NULL,
-          `offer_product_price` text NOT NULL,
-          `offer_compare_at_price` text NOT NULL,
-          `offer_variant_price` text NOT NULL,
-          `offer_linked` text NOT NULL,
-          `offer_closable` text NOT NULL,
-          `offer_quantity_chooser` text NOT NULL,
-          `offer_condition_rule` text NOT NULL,
-          `offer_conditions` longtext NOT NULL,
-          `offer_show_after_accepted` text NOT NULL,
-          `offer_required_for_checkout` text NOT NULL,
-          `offer_automatically_remove` text NOT NULL,
-          `offer_apply_discount` text NOT NULL,
-          `offer_discount_code` text NOT NULL,
-          `offer_to_checkout` text NOT NULL,
-          `offer_ab_text` text NOT NULL,
-          `offer_ab_test` text NOT NULL,
-          `offer_ab_button` text NOT NULL,
-          `offer_status` text NOT NULL,
-          `offer_date` int(11) NOT NULL,
-          `offer_custom_fields` longtext NOT NULL,
-          PRIMARY KEY (`offer_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;';
-
-        if ($this->db->query($query)) {
-            $this->db->query('TRUNCATE TABLE `offers`');
-            $this->db->query('COMMIT;');
-            echo 'table created';
-        }
-    }
-
-    public function new_settings_table()
-    {
-        $this->db->query('DROP TABLE IF EXISTS `settings`');
-        $query = '
-        CREATE TABLE IF NOT EXISTS `settings` (
-            `shop` text NOT NULL,
-            `cart_location` text NOT NULL,
-            `cart_position` text NOT NULL,
-            `drawer_location` text NOT NULL,
-            `drawer_position` text NOT NULL,
-            `refresh_state` text NOT NULL,
-            `drawer_refresh` text NOT NULL,
-            `layout_bg` text NOT NULL,
-            `layout_color` text NOT NULL,
-            `layout_font` text NOT NULL,
-            `layout_size` text NOT NULL,
-            `layout_mt` text NOT NULL,
-            `layout_mb` text NOT NULL,
-            `offer_radius` text NOT NULL,
-            `offer_bs` text NOT NULL,
-            `offer_bc` text NOT NULL,
-            `offer_border` text NOT NULL,
-            `button_bg` text NOT NULL,
-            `button_color` text NOT NULL,
-            `button_font` text NOT NULL,
-            `button_size` text NOT NULL,
-            `button_mt` text NOT NULL,
-            `button_mb` text NOT NULL,
-            `button_radius` text NOT NULL,
-            `button_bs` text NOT NULL,
-            `button_bc` text NOT NULL,
-            `button_border` text NOT NULL,
-            `image_radius` text NOT NULL,
-            `image_bs` text NOT NULL,
-            `image_bc` text NOT NULL,
-            `image_border` text NOT NULL,
-            `text_color` text NOT NULL,
-            `text_font` text NOT NULL,
-            `text_size` text NOT NULL,
-            `title_color` text NOT NULL,
-            `title_font` text NOT NULL,
-            `title_size` text NOT NULL,
-            `price_color` text NOT NULL,
-            `price_font` text NOT NULL,
-            `price_size` text NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;';
-
-        if ($this->db->query($query)) {
-            $this->db->query('TRUNCATE TABLE `settings`');
-            $this->db->query('COMMIT;');
-            echo 'table created';
-        }
-    }
-
-    public function all_tables()
-    {
-
-        $this->db->query('DROP TABLE IF EXISTS `cbs`');
-        $cbs = '
-            CREATE TABLE `cbs` (
-                `bid` text NOT NULL,
-                `rule` text NOT NULL,
-                `oid` text NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($cbs)) {
-            $this->db->query('TRUNCATE TABLE `cbs`');
-            $this->db->query('COMMIT;');
-            echo 'Blocks Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `cfs`');
-        $cfs = '
-            CREATE TABLE `cfs` (
-                `fid` text NOT NULL,
-                `oid` text NOT NULL,
-                `pid` text NOT NULL,
-                `type` text NOT NULL,
-                `name` varchar(255) NOT NULL,
-                `placeholder` varchar(255) NOT NULL,
-                `price` text NOT NULL,
-                `required` text NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($cfs)) {
-            $this->db->query('TRUNCATE TABLE `cfs`');
-            $this->db->query('COMMIT;');
-            echo 'Fields Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `choices`');
-        $choices = '
-            CREATE TABLE `choices` (
-                `fid` text NOT NULL,
-                `oid` text NOT NULL,
-                `pid` text NOT NULL,
-                `price` text NOT NULL,
-                `value` text NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($choices)) {
-            $this->db->query('TRUNCATE TABLE `choices`');
-            $this->db->query('COMMIT;');
-            echo 'Choices Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `ocs`');
-        $ocs = '
-            CREATE TABLE `ocs` (
-                `cid` text NOT NULL,
-                `oid` text NOT NULL,
-                `bid` text NOT NULL,
-                `type` text NOT NULL,
-                `quantity` text NOT NULL,
-                `level` text NOT NULL,
-                `content` varchar(255) NOT NULL,
-                `pid` text NOT NULL,
-                `vid` text NOT NULL,
-                `amount` text NOT NULL,
-                `country` text NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($ocs)) {
-            $this->db->query('TRUNCATE TABLE `ocs`');
-            $this->db->query('COMMIT;');
-            echo 'Conditions Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `offers`');
-        $offers = '
-            CREATE TABLE `offers` (
-                `offer_id` int(30) NOT NULL AUTO_INCREMENT,
-                `shop` varchar(255) NOT NULL,
-                `date` text NOT NULL,
-                `title` text NOT NULL,
-                `scheme` text NOT NULL,
-                `stop_show` text NOT NULL,
-                `layout` text NOT NULL,
-                `required_checkout` text NOT NULL,
-                `discount` text NOT NULL,
-                `code` varchar(255) NOT NULL,
-                `rule` text NOT NULL,
-                `to_checkout` text NOT NULL,
-                `status` text NOT NULL,
-                `text` varchar(10000) NOT NULL,
-                `atc` text NOT NULL,
-                `close` text NOT NULL,
-                PRIMARY KEY (`offer_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($offers)) {
-            $this->db->query('TRUNCATE TABLE `offers`');
-            $this->db->query('COMMIT;');
-            echo 'Offers Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `products`');
-        $products = '
-            CREATE TABLE `products` (
-                `product_id` int(30) NOT NULL AUTO_INCREMENT,
-                `product` text NOT NULL,
-                `offer` text NOT NULL,
-                `text` varchar(10000) NOT NULL,
-                `atc` varchar(255) NOT NULL,
-                `show_title` text NOT NULL,
-                `show_price` text NOT NULL,
-                `show_image` text NOT NULL,
-                `v_price` text NOT NULL,
-                `c_price` text NOT NULL,
-                `linked` text NOT NULL,
-                `q_select` text NOT NULL,
-                `ab_test` text NOT NULL,
-                `ab_text` varchar(10000) NOT NULL,
-                `ab_atc` varchar(255) NOT NULL,
-                `rp` text NOT NULL,
-                `rv` text NOT NULL,
-                PRIMARY KEY (`product_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($products)) {
-            $this->db->query('TRUNCATE TABLE `products`');
-            $this->db->query('COMMIT;');
-            echo 'Products Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `settings`');
-        $settings = '
-            CREATE TABLE `settings` (
-                `shop` text NOT NULL,
-                `cart_location` text NOT NULL,
-                `cart_position` text NOT NULL,
-                `drawer_location` text NOT NULL,
-                `drawer_position` text NOT NULL,
-                `refresh_state` text NOT NULL,
-                `drawer_refresh` text NOT NULL,
-                `layout_bg` text NOT NULL,
-                `layout_color` text NOT NULL,
-                `layout_font` text NOT NULL,
-                `layout_size` text NOT NULL,
-                `layout_mt` text NOT NULL,
-                `layout_mb` text NOT NULL,
-                `offer_radius` text NOT NULL,
-                `offer_bs` text NOT NULL,
-                `offer_bc` text NOT NULL,
-                `offer_border` text NOT NULL,
-                `button_bg` text NOT NULL,
-                `button_color` text NOT NULL,
-                `button_font` text NOT NULL,
-                `button_size` text NOT NULL,
-                `button_mt` text NOT NULL,
-                `button_mb` text NOT NULL,
-                `button_radius` text NOT NULL,
-                `button_bs` text NOT NULL,
-                `button_bc` text NOT NULL,
-                `button_border` text NOT NULL,
-                `image_radius` text NOT NULL,
-                `image_bs` text NOT NULL,
-                `image_bc` text NOT NULL,
-                `image_border` text NOT NULL,
-                `text_color` text NOT NULL,
-                `text_font` text NOT NULL,
-                `text_size` text NOT NULL,
-                `title_color` text NOT NULL,
-                `title_font` text NOT NULL,
-                `title_size` text NOT NULL,
-                `price_color` text NOT NULL,
-                `price_font` text NOT NULL,
-                `price_size` text NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-        ';
-        if ($this->db->query($settings)) {
-            $this->db->query('TRUNCATE TABLE `settings`');
-            $this->db->query('COMMIT;');
-            echo 'Settings Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `shops`');
-        $shops = '
-            CREATE TABLE `shops` (
-                `shop_id` int(30) NOT NULL AUTO_INCREMENT,
-                `shop` varchar(10000) NOT NULL,
-                `token` varchar(10000) NOT NULL,
-                `date` int(30) NOT NULL,
-                `type` text NOT NULL,
-                `name` text NOT NULL,
-                `price` text NOT NULL,
-                `bill_interval` text NOT NULL,
-                `capped_amount` text NOT NULL,
-                `terms` text NOT NULL,
-                `trial_days` text NOT NULL,
-                `test` text NOT NULL,
-                `on_install` text NOT NULL,
-                `created_at` text NOT NULL,
-                `updated_at` text NOT NULL,
-                PRIMARY KEY (`shop_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($shops)) {
-            $this->db->query('TRUNCATE TABLE `shops`');
-            $this->db->query('COMMIT;');
-            echo 'Shops Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `stats`');
-        $stats = '
-            CREATE TABLE `stats` (
-                `stat_id` int(11) NOT NULL AUTO_INCREMENT,
-                `date` text NOT NULL,
-                `shop` text NOT NULL,
-                `offer` text NOT NULL,
-                `product` text NOT NULL,
-                `variant` text NOT NULL,
-                `quantity` text NOT NULL,
-                `ip` text NOT NULL,
-                `country` text NOT NULL,
-                `type` text NOT NULL,
-                `action` text NOT NULL,
-                `page` text NOT NULL,
-                `device` text NOT NULL,
-                `browser` text NOT NULL,
-                `citems` longtext NOT NULL,
-                `price` text NOT NULL,
-                PRIMARY KEY (`stat_id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($stats)) {
-            $this->db->query('TRUNCATE TABLE `stats`');
-            $this->db->query('COMMIT;');
-            echo 'Stats Done<br /><br />';
-        }
-
-        $this->db->query('DROP TABLE IF EXISTS `variants`');
-        $cbs = '
-            CREATE TABLE `variants` (
-                `id` int(30) NOT NULL AUTO_INCREMENT,
-                `oid` text NOT NULL,
-                `pid` text NOT NULL,
-                `vid` text NOT NULL,
-                PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        ';
-        if ($this->db->query($cbs)) {
-            $this->db->query('TRUNCATE TABLE `variants`');
-            $this->db->query('COMMIT;');
-            echo 'Variants Done<br /><br />';
-        }
-    }
-
     public function metadata()
     {
         $data['shop'] = 'sleek-apps';
@@ -1296,20 +642,6 @@ class Slade extends CI_Controller
         $data['shop'] = 'sleek-apps';
         $data['page_name'] = 'privacy-policy';
         $this->load->view('index', $data);
-    }
-
-    public function s_s_w($shop)
-    {
-        $token = $this->db->where('shop', str_replace(".myshopify.com", "", $shop))->get('shops')->row()->token;
-        echo '?s=' . sha1(str_replace(".myshopify.com", "", $shop)) . '&t=' . $token;
-    }
-
-    public function suw($shop)
-    {
-        $data['token'] = $this->db->where('shop', str_replace(".myshopify.com", "", $shop))->get('shops')->row()->token;
-        $data['shop'] = str_replace(".myshopify.com", "", $shop);
-
-        $this->load->view('suw', $data);
     }
 
     public function users($shop, $token)
