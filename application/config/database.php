@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------
@@ -76,9 +76,9 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'us-cdbr-east-02.cleardb.com',
-	'username' => 'ba63c4bb5372ec',
-	'password' => '5b94749c',
-	'database' => 'heroku_6e5b04e8808c069',
+	'username' => 'b4f65f865e65db',
+	'password' => 'c234e6a6',
+	'database' => 'heroku_673e8951b957bb7',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
