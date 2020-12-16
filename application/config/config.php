@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'https://sleek-upsell.com/';
+$config['base_url'] = 'https://sleek-discount.com/';
 
 /*
 |--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ $config['index_page'] = 'index.php';
 |
 | WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
 */
-$config['uri_protocol']	= 'REQUEST_URI';
+$config['uri_protocol']    = 'REQUEST_URI';
 
 /*
 |--------------------------------------------------------------------------
@@ -76,7 +76,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']	= 'english';
+$config['language']    = 'english';
 
 /*
 |--------------------------------------------------------------------------
@@ -400,11 +400,11 @@ $config['sess_regenerate_destroy'] = FALSE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']	= '';
-$config['cookie_domain']	= '';
-$config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
+$config['cookie_prefix']    = '';
+$config['cookie_domain']    = '';
+$config['cookie_path']        = '/';
+$config['cookie_secure']    = FALSE;
+$config['cookie_httponly']     = FALSE;
 
 /*
 |--------------------------------------------------------------------------
@@ -522,8 +522,8 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
-$config['shopify_api_key'] = 'ad1d8c0159547e886af6d777c058e4d9';
-$config['shopify_secret'] = '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';
+$config['shopify_api_key'] = 'ebd3beb53536de1281ef5993dda07655';
+$config['shopify_secret'] = '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';
 $config['redirect_url'] = '/generate_token';
 
 $config['protocol']  = 'smtp';
@@ -533,4 +533,4 @@ $config['smtp_pass'] = 'your_password';
 $config['smtp_port'] = 465;
 $config['charset']   = 'utf-8';
 $config['mailtype']  = 'html';
-$config['newline']   = "\r\n"; 
+$config['newline']   = "\r\n";
